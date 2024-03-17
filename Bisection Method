@@ -1,0 +1,63 @@
+% Define the function
+f = @(x) x*log10(x)-1.2;
+
+% Define the interval [a, b]
+a = 2;
+b = 3;
+
+% Define the number of correct decimals
+n = 6;
+epsilon = 5*10^(-n-1);
+itermax = 70;
+x0 = (a + b) / 2;
+err = abs(f(x0));
+iter = 1;
+Variables = {'iter','a','b','x0','f_x0','Error'};
+HG = [iter a b x0 f(x0) err];
+
+% Check if the initial values are valid
+if f(a) * f(b) > 0
+    disp('Wrong choice of initial interval [a, b]');
+else
+    % Main loop for the bisection method
+    while iter <= itermax && err >= epsilon
+        if f(a) * f(x0) < 0
+            b = x0;
+        else
+            a = x0;
+        end
+        x0 = (a + b) / 2;
+        err = abs(f(x0));
+        HG = [HG; iter+1 a b x0 f(x0) err];
+        iter = iter + 1;
+    end
+end
+
+% Display the output table
+disp('Output table:');
+result = array2table(HG);
+result.Properties.VariableNames(1:size(HG,2)) = Variables;
+disp(result);
+
+% Display the converged solution
+x0 = x0 - rem(x0, 10^(-n));
+fprintf('Converged solution after %d iterations\n', iter);
+fprintf('Root = %2.5f\n', x0);
+
+% Plotting the function and highlighting the root
+figure;
+subplot(2,1,1);
+fplot(f, [a, b]); hold on;
+plot([a, b], [0, 0], 'k--');  % Plotting y = 0 line
+plot(x0, f(x0), 'ro', 'MarkerSize', 10);  % Highlighting the root
+title('Bisection Method f(x)-22051467');
+xlabel('x');
+ylabel('f(x)');
+legend('f(x)', 'y = 0', 'Root','location','best');
+
+% Subplot for the error curve
+subplot(2,1,2);
+plot(1:iter, HG(:, end), 'b.-');
+title('Error in Bisection Method-22051467 ');
+xlabel('Iterations');
+ylabel('Error');
