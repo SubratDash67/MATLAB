@@ -1,0 +1,46 @@
+format short
+clc
+clearvars; % Clearing variables
+
+% Initializing an initial array
+A = [6 2 3 4;11 12 9 7;13 10 8 14;5 15 16 17];
+
+% Adding identity matrix
+dim = size(A, 1);
+B = [A eye(dim)];
+fprintf('Subrat Dash, 22051467\n');
+% Showing the initial augmented array
+fprintf('Initial Augmented Array:\n');
+disp(B);
+
+% Applying Gaussian elimination
+for i = 1:dim
+    pivot_element = B(i, i);
+    
+    % Displaying row normalization operation
+    fprintf('R%d = R%d / %.2f\n', i, i, pivot_element);
+    B(i, :) = B(i, :) / pivot_element; % Normalizing pivot element to 1
+    
+    for j = 1:dim
+        if j ~= i
+            multiplier = B(j, i);
+            % Displaying row operation
+            fprintf('R%d = R%d - (%.2f)*R%d\n', j, j, multiplier, i);
+            B(j, :) = B(j, :) - multiplier * B(i, :); % Performing elimination
+        end
+    end
+    
+    % Displaying the matrix after all operations for the current pivot
+    fprintf('->\n');
+    disp(B);
+end
+
+% Extracting inverse from augmented array
+inverse_array = B(:, dim+1:end);
+
+% Displaying the final steps and the resulting inverse array
+fprintf('\nFinal Gaussian Elimination Step:\n');
+disp(B);
+fprintf('\nInverse Array:\n');
+disp(inverse_array);
+fprintf('Name: Subrat Dash, Roll: 22051467');
