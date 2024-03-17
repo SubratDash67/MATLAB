@@ -1,0 +1,31 @@
+function [dtheta_dt]=ode_func(t,theta,b,g,l,m)
+theta1 = theta(1)
+theta2 = theta(2)
+dtheta1_dt= theta(2);
+dtheta2_dt=-(b/m)*theta2-(g/l)*sin(theta1);
+dtheta_dt=[dtheta1_dt;dtheta2_dt];
+
+end
+clc
+clear all
+
+b = 0.05;
+g = 9.81;
+l = 1;
+m = 0.1;
+theta_0 = [0; 5];
+t_span = linspace(0, 5, 500);
+[t, results] = ode45(@(t,theta) ode_func(t,theta,b,g,l,m), t_span, theta_0);
+
+% Create a table from the results
+result_table = table(t, results(:,1), results(:,2), 'VariableNames', {'Time', 'Theta1', 'Theta2'});
+
+% Display the table
+disp(result_table);
+
+% Plotting
+plot(t, results(:,1))
+hold on
+plot(t, results(:,2))
+ylabel('Plot')
+xlabel('Time')
