@@ -1,0 +1,69 @@
+clear all;
+close all;
+clc;
+
+% Define the function
+f = @(x) x*log10(x)-1.2;
+
+% Define the interval [a, b]
+a = 2;
+b = 3;
+
+% Define the number of correct decimals
+n = 6;
+epsilon = 5*10^(-n-1);
+itermax = 70;
+
+% Initialize variables
+x0 = a; % Initial guess
+iter = 0;
+err = epsilon + 1; % Initialize error to a value greater than epsilon
+Variables = {'iter','a','b','x0','f_x0','Error'};
+HG = [iter a b x0 f(x0) err];
+
+% Check if the initial values are valid
+if f(a) * f(b) > 0
+    disp('Wrong choice of initial interval [a, b]');
+else
+    % Main loop for the Regular Falsi Method
+    while iter <= itermax && err >= epsilon
+        x1 = (a * f(b) - b * f(a)) / (f(b) - f(a));
+        if f(a) * f(x1) < 0
+            b = x1;
+        else
+            a = x1;
+        end
+        err = abs(f(x1));
+        HG = [HG; iter+1 a b x1 f(x1) err];
+        iter = iter + 1; % Increment the iteration counter
+    end
+end
+
+% Display the output table
+disp('Output table:');
+result = array2table(HG);
+result.Properties.VariableNames(1:size(HG,2)) = Variables;
+disp(result);
+
+% Display the converged solution
+fprintf('Converged solution after %d iterations\n', iter);
+fprintf('Root = %2.5f\n', x1);
+
+% Plotting the function and highlighting the root
+figure;
+subplot(2,1,1);
+fplot(f, [a, b]); hold on;
+plot([a, b], [0, 0], 'k--');  % Plotting y = 0 line
+plot(x1, f(x1), 'ro', 'MarkerSize', 10);  % Highlighting the root
+title('Regular Falsi Method f(x)- 22051467');
+xlabel('x');
+ylabel('f(x)');
+legend('f(x)', 'y = 0', 'Root','location','best');
+xlim([a-0.1, b+0.1]); % Adjust x-axis limits to include root
+
+% Subplot for the error curve
+subplot(2,1,2);
+plot(0:iter, HG(:, end), 'b.-'); % Adjusted the x-axis to start from 0
+title('Error in Regular Falsi Method-22051467');
+xlabel('Iterations');
+ylabel('Error');
