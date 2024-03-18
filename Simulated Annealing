@@ -1,0 +1,95 @@
+% Define the objective function (Rosenbrock function)
+fun = @(x) (1 - x(1))^2 + 100 * (x(2) - x(1)^2)^2;
+
+% Simulated Annealing Algorithm
+T0 = 100; % Initial temperature
+Tf = 0.01; % Final temperature
+cooling_rate = 0.95; % Cooling rate
+num_iterations = 1000; % Number of iterations
+
+% Initial solution
+x0 = [0, 0];
+current_solution = x0;
+current_cost = fun(current_solution);
+
+% Store the best solution
+best_solution = current_solution;
+best_cost = current_cost;
+best_iteration = 1; % Track the iteration number at which the best solution is found
+
+% Initialize temperature
+T = T0;
+
+% Initialize plot variables
+x_hist = [];
+y_hist = [];
+cost_hist = [];
+
+% Start optimization loop
+for it = 1:num_iterations
+    % Generate a random solution
+    proposed_solution = current_solution + randn(1, 2);
+    
+    % Clip to bounds (optional)
+    proposed_solution = max(min(proposed_solution, [5, 5]), [-5, -5]);
+    
+    % Calculate cost
+    proposed_cost = fun(proposed_solution);
+    
+    % Calculate acceptance probability
+    delta_cost = proposed_cost - current_cost;
+    if delta_cost < 0 || rand < exp(-delta_cost / T)
+        % Accept the proposed solution
+        current_solution = proposed_solution;
+        current_cost = proposed_cost;
+        
+        % Update best solution
+        if current_cost < best_cost
+            best_solution = current_solution;
+            best_cost = current_cost;
+            best_iteration = it; % Update the best iteration number
+        end
+    end
+    
+    % Cooling
+    T = cooling_rate * T;
+    
+    % Store history for contour plot
+    x_hist = [x_hist, current_solution(1)];
+    y_hist = [y_hist, current_solution(2)];
+    cost_hist = [cost_hist, current_cost];
+end
+
+% Print results
+fprintf('Number of iterations: %d\n', num_iterations);
+fprintf('Best solution: x = %.4f, y = %.4f\n', best_solution(1), best_solution(2));
+fprintf('Found at iteration: %d\n', best_iteration);
+
+% Plot trajectory
+figure;
+plot(x_hist, y_hist, 'ro-');
+title('Solution Trajectory,22051467');
+xlabel('x');
+ylabel('y');
+axis equal;
+
+% Plot objective function vs iteration
+figure;
+plot(1:best_iteration, cost_hist(1:best_iteration))
+title('Objective Function vs Iteration,22051467');
+xlabel('Iteration');
+ylabel('Cost');
+
+% Plot contour
+figure;
+x = linspace(-5, 5, 100);
+y = linspace(-5, 5, 100);
+[X, Y] = meshgrid(x, y);
+Z = (1 - X).^2 + 100 * (Y - X.^2).^2;
+contour(X, Y, Z, 100); % Decreased the number of contour lines for better visualization
+hold on;
+plot(best_solution(1), best_solution(2), 'ro', 'MarkerSize', 10, 'LineWidth', 2);
+title('Contour Plot');
+xlabel('x');
+ylabel('y');
+hold off;
